@@ -37,8 +37,21 @@ cd windows-like-wine
 ./scripts/04-dotnet48.sh           # .NET Framework 4.8 (~20 min)
 ./scripts/05-mejoras-visuales.sh   # ClearType, tema, escritorio con taskbar
 ./scripts/06-lanzador.sh           # entrada en el menú de aplicaciones
+./scripts/07-apps-basicas.sh       # Calculadora y Paint clásicos
+./scripts/08-menu-inicio.sh        # accesos en el menú Inicio (Accesorios)
 ./scripts/99-backup.sh             # imagen de fábrica restaurable
 ```
+
+## Apps de Windows incluidas
+
+| App | Origen | Comando |
+|-----|--------|---------|
+| Bloc de notas, WordPad, Administrador de tareas, Regedit, CMD, Panel de control, Explorador | Built-in de Wine (reimplementaciones libres) | `wine notepad`, `wine write`, `wine taskmgr`... |
+| Calculadora (con modo científico) | Clásica Win32 (script 07) | `wine calc` |
+| Paint | Clásico Win32 (script 07) | `wine mspaint` |
+
+Las versiones modernas de Calculadora/Paint/Notepad de Windows 10/11 son UWP
+y **no funcionan en Wine** — las clásicas Win32 son el estándar de facto.
 
 Al terminar: busca **"Windows 10 (Wine)"** en tu menú de aplicaciones.
 

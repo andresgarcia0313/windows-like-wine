@@ -3,6 +3,16 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [1.1.0] - 2026-06-12
+
+### Agregado
+- Script 07: apps básicas de Windows — Calculadora y Paint clásicos (Win32,
+  funcionan donde las versiones UWP modernas no pueden) + dependencia MFC42
+- Script 08: accesos del menú Inicio (carpeta Accesorios) generados con
+  pylnk3, dado que el VBScript de Wine no implementa CreateShortcut
+- Documentado el inventario de apps que Wine ya trae built-in (notepad,
+  wordpad, taskmgr, regedit, cmd, control, msinfo32, clock, winver)
+
 ## [1.0.0] - 2026-06-12
 
 ### Agregado
