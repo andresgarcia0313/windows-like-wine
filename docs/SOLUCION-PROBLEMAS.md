@@ -1,5 +1,31 @@
 # Solución de problemas
 
+## La ventana del escritorio se ve negra cuando NO tiene el foco
+
+Problema conocido de Wine bajo XWayland con compositores Wayland (reportado en
+KDE, GNOME y Sway): la ventana deja de repintarse al perder el foco. Es
+**cosmético** — el contenido vuelve al enfocarla de nuevo.
+
+Mitigaciones:
+1. Cerrar otras ventanas Wine huérfanas: `wineserver -k` y reabrir el escritorio
+2. Si te molesta a diario: iniciar sesión en **"Plasma (X11)"** desde la pantalla
+   de login — bajo Xorg el problema no existe
+3. Verificar que el efecto KWin "Atenuar ventanas inactivas" esté desactivado
+   (Preferencias del sistema → Efectos de escritorio)
+
+## El menú Inicio abre las apps con error "Archivo no encontrado"
+
+Los `.lnk` fueron creados con una herramienta externa que el shell de Wine no
+puede resolver. Regenerarlos con el shell nativo: `./scripts/08-menu-inicio.sh`
+(crea los accesos vía shell32 de Wine, que sí resuelven).
+
+## "Salir" del menú Inicio no cierra el entorno
+
+Limitación conocida del explorer de Wine. Alternativas confiables:
+1. Menú Inicio → Programs → Accesorios → **"Apagar Windows"** (creado por el paso 08)
+2. El botón X de la ventana
+3. Terminal: `wineserver -k`
+
 ## La app corre pero no aparece ninguna ventana
 
 **Síntoma:** `pgrep` muestra el proceso vivo, pero no hay ventana. Con escritorio

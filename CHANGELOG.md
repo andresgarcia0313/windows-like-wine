@@ -3,6 +3,19 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [1.1.1] - 2026-06-12
+
+### Corregido
+- Menú Inicio: los .lnk de pylnk3 no resolvían en el shell de Wine ("Archivo
+  no encontrado"). Ahora se crean con el propio shell32 de Wine mediante
+  tools/CreateLnk.cs (IShellLink + IPersistFile) compilado con el csc del prefix
+- Agregado acceso "Apagar Windows" (wineboot -k): el Exit del menú de Wine
+  no siempre cierra el entorno
+
+### Documentado
+- Ventana negra al perder foco: problema conocido XWayland/compositores
+  Wayland, cosmético, con mitigaciones en SOLUCION-PROBLEMAS.md
+
 ## [1.1.0] - 2026-06-12
 
 ### Agregado
