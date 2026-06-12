@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Windows 10 (Wine)
+GenericName=Entorno Windows
+Comment=Escritorio Windows con barra de tareas y menú inicio
+Exec=/usr/bin/wine explorer /desktop=shell,1600x900
+Icon=wine
+Terminal=false
+Categories=System;Emulator;
+Keywords=windows;wine;explorer;escritorio;
+StartupNotify=true
