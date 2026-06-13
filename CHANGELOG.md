@@ -3,6 +3,21 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [1.3.0] - 2026-06-13
+
+### Agregado
+- Script 10 pulido final: swappiness del host (150→10), DPI auto-detectado
+  por resolución, color de escritorio azul Win10 (#1E3C78), resolución
+  adaptativa a pantalla real, sandbox (Z: drive eliminado + winemenubuilder
+  desactivado), y Windows Media Player 11
+- Captura actualizada con aspecto azul oscuro a 1920x1080 fullscreen
+
+### Documentado
+- wmctrl crashea (segfault) con escritorios del tamaño exacto de la pantalla
+  en XWayland; usar xdotool search --name como alternativa
+- Clipboard Linux↔Wine funciona automáticamente via X11/XWayland sin config
+- DPI auto: 96 (1080p), 120 (1440p), 144 (4K)
+
 ## [1.2.0] - 2026-06-12
 
 ### Agregado
