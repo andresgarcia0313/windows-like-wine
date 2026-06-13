@@ -3,6 +3,24 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [1.2.0] - 2026-06-12
+
+### Agregado
+- Script 09 tuning avanzado: NTSYNC (validación empírica con lsof — algunos
+  builds de Wine no lo soportan), Wine Gecko 2.47.4 dual-arch, capa gráfica
+  DXVK/VKD3D/D3DX9 (con verificación previa de Vulkan 1.3+), runtime VB6,
+  nocrashdialog y VideoMemorySize
+- Carpeta "Sistema" en el menú Inicio: winecfg, regedit, panel de control,
+  desinstalador y CMD
+
+### Documentado
+- mdac28/jet40 no funcionan en prefixes win64 (límite de winetricks);
+  alternativa: Access Database Engine per-app
+- El verbo correcto es vb6run (no vbrun6); winetricks imprime su ayuda
+  con EXIT=1 ante verbos inexistentes
+- Pueden aparecer dos escritorios "shell" por carrera al lanzar apps justo
+  tras crear el escritorio; cerrar con wineserver -k y reabrir
+
 ## [1.1.1] - 2026-06-12
 
 ### Corregido
