@@ -3,6 +3,28 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [1.5.0] - 2026-06-13
+
+### Agregado
+- Lanzador inteligente `bin/windows-like`: detecta el work area del monitor
+  activo (`_NET_WORKAREA`), abre el escritorio a esa resolución y le quita el
+  estado `_NET_WM_STATE_FULLSCREEN`, encajándolo en el área útil. La ventana
+  ocupa todo menos los paneles de KDE y permite alternar entre aplicaciones.
+  Reusa la sesión existente en vez de duplicarla.
+- Ícono original propio `launcher/windows-like.svg` (marco de ventana con cuatro
+  paneles, licencia MIT, sin reproducir logotipos de marca) + PNG 16–256.
+
+### Cambiado
+- `windows10-wine.desktop`: `Exec=windows-like` (antes resolución fija
+  `1920x1080` que tapaba los paneles) e `Icon=windows-like`.
+
+### Corregido
+- Escritorio que tapaba los paneles de KDE: Wine marca el escritorio virtual
+  como fullscreen y KDE lo coloca sobre los paneles. Se resuelve removiendo el
+  estado fullscreen tras el arranque y fijando la geometría al work area; la
+  resolución interna se iguala a la ventana para que la barra de tareas quede
+  pegada al borde inferior.
+
 ## [1.4.0] - 2026-06-13
 
 ### Agregado
