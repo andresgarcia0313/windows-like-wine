@@ -41,6 +41,7 @@ cd windows-like-wine
 ./scripts/08-menu-inicio.sh        # accesos en el menú Inicio (Accesorios)
 ./scripts/09-tuning-avanzado.sh    # NTSYNC, Gecko, DXVK, VB6, pulido
 ./scripts/10-pulido-final.sh       # swappiness, DPI, color, resolución, sandbox, WMP
+./scripts/11-visual-upgrade.sh     # Segoe UI, charmap, tema Windows 10
 ./scripts/99-backup.sh             # imagen de fábrica restaurable
 ```
 

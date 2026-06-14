@@ -3,6 +3,19 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [1.4.0] - 2026-06-13
+
+### Agregado
+- Script 11: upgrade visual — fuentes Segoe UI reales (11 archivos extraídos
+  de Windows 11 real vía SSH), charmap.exe nativo, y tema Windows 10 msstyles
+  (8 MB, Botspot/wine-stuff)
+- Acceso "Mapa de caracteres" en menú Inicio (Accesorios, total: 7 accesos)
+- Total de fuentes en el prefix: 48 (antes 37)
+
+### Cambiado
+- Sustitución Segoe UI→Tahoma eliminada: ahora se usa la fuente Segoe UI real
+  de Microsoft — diálogos y UI idéntica a Windows 10/11
+
 ## [1.3.0] - 2026-06-13
 
 ### Agregado
