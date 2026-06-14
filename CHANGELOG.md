@@ -3,6 +3,23 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [1.5.1] - 2026-06-13
+
+### Cambiado
+- `bin/windows-like`: se elimina la detección automática del área de trabajo
+  (resultó frágil entre monitores y bajo XWayland) y se fija la resolución en
+  `1366x768` (16:9) en modo ventana. Simplicidad y estabilidad sobre
+  adaptabilidad.
+
+### Agregado
+- `~/.local/bin/wine-shot`: captura solo la ventana de Wine bajo KDE Wayland
+  vía X11 (`import -window`), sin spectacle, sin activar la ventana y sin
+  interrumpir el trabajo del usuario.
+
+### Documentado
+- La barra de tareas del escritorio "shell" funciona; el "solo azul sin menú"
+  era un artefacto de primer pintado de XWayland que se resuelve al interactuar.
+
 ## [1.5.0] - 2026-06-13
 
 ### Agregado

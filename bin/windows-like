@@ -1,68 +1,24 @@
 #!/usr/bin/env bash
-# windows-like — abre el entorno Windows-like en una ventana que ocupa el area
-# de trabajo del monitor actual SIN tapar los paneles de KDE, permitiendo
-# alternar entre aplicaciones del escritorio anfitrion.
-#
-# Wine marca el escritorio virtual como _NET_WM_STATE_FULLSCREEN, lo que en KDE
-# cubre los paneles. Este lanzador: (1) fija la resolucion interna del escritorio
-# al work area, (2) lo abre, y (3) le quita el estado fullscreen y lo encaja
-# exactamente en el work area, de modo que la barra de tareas queda al borde
-# inferior y los paneles de KDE permanecen visibles.
+# windows-like — abre el entorno Windows-like en una ventana de tamano fijo
+# 1366x768 (modo ventana). Resolucion fija por simplicidad y estabilidad: la
+# deteccion automatica del area de trabajo resulto fragil entre monitores y
+# bajo XWayland, asi que se usa un tamano 16:9 conservador que cabe en
+# cualquier pantalla moderna sin tapar los paneles de KDE.
 set -euo pipefail
 export WINEPREFIX="${WINEPREFIX:-$HOME/.wine}"
 export WINEDEBUG="${WINEDEBUG:--all}"
 WINE_BIN="$(command -v wine || echo /usr/bin/wine)"
+RES="1366x768"
 
-# --- Geometria del area de trabajo del monitor activo ---------------------
-screen_w() { xrandr 2>/dev/null | awk '/\*/{print $1; exit}' | cut -dx -f1; }
-
-read_workarea() {  # imprime: X Y W H  (del primer escritorio)
-  xprop -root _NET_WORKAREA 2>/dev/null \
-    | grep -oE '[0-9]+(, [0-9]+)+' | head -1 | tr -d ' ' \
-    | awk -F, '{print $1, $2, $3, $4}'
-}
-
-WA="$(read_workarea || true)"
-if [ -n "$WA" ]; then
-  read -r WX WY WW WH <<<"$WA"
-  SW="$(screen_w || echo "$WW")"
-  # _NET_WORKAREA abarca todos los monitores: limitar ancho al monitor activo.
-  if [ -n "$SW" ] && [ "$WW" -gt "$SW" ]; then WW="$SW"; fi
-else
-  WX=0; WY=0; WW="$(screen_w || echo 1920)"; WH=980
-fi
-RES="${WW}x${WH}"
-
-# --- Resolucion interna del escritorio "shell" = work area ----------------
+# Canvas interno del escritorio "shell" = tamano de la ventana.
 "$WINE_BIN" reg add "HKCU\\Software\\Wine\\Explorer\\Desktops" \
   /v shell /t REG_SZ /d "$RES" /f >/dev/null 2>&1 || true
 
-# --- Si ya hay una sesion abierta, traerla al frente en vez de duplicar ----
+# Si ya hay una sesion abierta, traerla al frente en vez de duplicar.
 EXISTING="$(xdotool search --name "Wine Desktop" 2>/dev/null | head -1 || true)"
 if [ -n "$EXISTING" ]; then
   xdotool windowactivate "$EXISTING" 2>/dev/null || true
   exit 0
 fi
 
-# --- Lanzar el escritorio -------------------------------------------------
-"$WINE_BIN" explorer "/desktop=shell,$RES" &
-
-# --- Encajar la ventana en el work area (quitar fullscreen) ---------------
-fit_window() {
-  local w="" i
-  for i in $(seq 1 60); do
-    w="$(xdotool search --name "Wine Desktop" 2>/dev/null | head -1 || true)"
-    [ -n "$w" ] && break
-    sleep 0.5
-  done
-  [ -z "$w" ] && return 0
-  sleep 1
-  command -v wmctrl >/dev/null && \
-    wmctrl -i -r "$w" -b remove,fullscreen,maximized_vert,maximized_horz 2>/dev/null || true
-  xdotool windowstate --remove FULLSCREEN "$w" 2>/dev/null || true
-  sleep 0.3
-  xdotool windowsize "$w" "$WW" "$WH" 2>/dev/null || true
-  xdotool windowmove "$w" "$WX" "$WY" 2>/dev/null || true
-}
-fit_window
-wait
+exec "$WINE_BIN" explorer "/desktop=shell,$RES"
