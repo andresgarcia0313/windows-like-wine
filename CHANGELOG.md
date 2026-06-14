@@ -3,6 +3,27 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [1.6.0] - 2026-06-14
+
+### Agregado
+- **Perfil unificado "Windows-like Luna"**: un solo comando `windows-like`
+  combina, de forma idempotente y sin descargas externas:
+  - escritorio "shell" con barra de tareas + menú Inicio,
+  - esquema de colores clásico Windows XP "Luna Blue" aplicado por registro
+    (`themes/xp-luna-blue.reg`: 31 colores + ClearType),
+  - ventana fija 1366x768 (16:9) estable.
+- `themes/xp-luna-blue.reg`: perfil declarativo reproducible (colores Luna,
+  suavizado ClearType, shell, driver x11). Reemplaza la dependencia frágil de
+  archivos `.msstyles` externos (Wine solo soporta temas era XP).
+- Flag `--setup-only` para aplicar el perfil sin abrir el escritorio.
+- Instalación del tema en ruta fija `~/.local/share/windows-like/` para que la
+  copia del lanzador en `~/.local/bin/` lo encuentre.
+
+### Corregido
+- El lanzador instalado buscaba el `.reg` relativo a su ubicación
+  (`~/.local/themes/`, inexistente) y saltaba el import en silencio. Ahora
+  resuelve el tema en repo o en la ruta instalada.
+
 ## [1.5.1] - 2026-06-13
 
 ### Cambiado

@@ -1,21 +1,35 @@
 #!/usr/bin/env bash
-# windows-like — abre el entorno Windows-like en una ventana de tamano fijo
-# 1366x768 (modo ventana). Resolucion fija por simplicidad y estabilidad: la
-# deteccion automatica del area de trabajo resulto fragil entre monitores y
-# bajo XWayland, asi que se usa un tamano 16:9 conservador que cabe en
-# cualquier pantalla moderna sin tapar los paneles de KDE.
+# windows-like — perfil unificado "Windows-like Luna" en un solo comando.
+# Combina, de forma idempotente y reproducible (sin descargas externas):
+#   1. Escritorio "shell" con barra de tareas + menu Inicio.
+#   2. Esquema de colores clasico Windows XP "Luna Blue" (themes/xp-luna-blue.reg).
+#   3. ClearType para tipografia nitida estilo Windows.
+#   4. Ventana fija 1366x768 (16:9) estable, sin tapar paneles de KDE.
+# Uso: windows-like [--setup-only]
 set -euo pipefail
 export WINEPREFIX="${WINEPREFIX:-$HOME/.wine}"
 export WINEDEBUG="${WINEDEBUG:--all}"
 WINE_BIN="$(command -v wine || echo /usr/bin/wine)"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RES="1366x768"
 
-# Canvas interno del escritorio "shell" = tamano de la ventana.
-"$WINE_BIN" reg add "HKCU\\Software\\Wine\\Explorer\\Desktops" \
-  /v shell /t REG_SZ /d "$RES" /f >/dev/null 2>&1 || true
+# Resolver el .reg del tema: primero junto al repo, luego la copia instalada.
+THEME=""
+for cand in "$HERE/themes/xp-luna-blue.reg" \
+            "$HOME/.local/share/windows-like/xp-luna-blue.reg"; do
+  [ -f "$cand" ] && { THEME="$cand"; break; }
+done
+
+apply_profile() {
+  # Importa el perfil completo (colores + ClearType + shell + driver).
+  [ -n "$THEME" ] && "$WINE_BIN" regedit /S "$THEME" >/dev/null 2>&1 || true
+}
+
+apply_profile
+[ "${1:-}" = "--setup-only" ] && { echo "Perfil Windows-like aplicado."; exit 0; }
 
 # Si ya hay una sesion abierta, traerla al frente en vez de duplicar.
-EXISTING="$(xdotool search --name "Wine Desktop" 2>/dev/null | head -1 || true)"
+EXISTING="$(xdotool search --name 'Wine Desktop' 2>/dev/null | head -1 || true)"
 if [ -n "$EXISTING" ]; then
   xdotool windowactivate "$EXISTING" 2>/dev/null || true
   exit 0
