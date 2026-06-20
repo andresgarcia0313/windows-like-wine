@@ -3,6 +3,28 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [1.7.0] - 2026-06-20
+
+### Cambiado
+- **Base .NET migrada a Wine Mono** (`04-wine-mono.sh`, nuevo): reemplazo libre
+  de .NET Framework hasta 4.8.1, instalado desde el `.msi` oficial 11.2.0
+  (verificación de tamaño exacto anti-corrupción). Pasa a ser el método
+  recomendado en lugar de `dotnet48`.
+- `04-dotnet48.sh` degradado a **alternativa opcional**: el .NET 4.8 real solo
+  se usa si una app concreta falla con Wine Mono. Motivo (evidencia de la
+  comunidad + doc oficial): en prefix win64 el instalador de `dotnet48` es
+  frágil (instalador roto, "Failed to open RpcSs service", conflictos de
+  registro), mientras Wine Mono instala limpio y coexiste con .NET Core/5+.
+  Ambos son mutuamente excluyentes para la serie 4.x.
+
+### Agregado
+- `04-wine-mono.sh`: instalación idempotente y reproducible de Wine Mono 11.2.0.
+
+### Documentado
+- corefonts, DXVK y VKD3D ya presentes en el prefix (scripts 03 y 09);
+  confirmados vía `winetricks list-installed`. UWP/MSIX (Calculadora y Bloc de
+  notas modernos) siguen sin soporte en Wine: se usan equivalentes Win32.
+
 ## [1.6.0] - 2026-06-14
 
 ### Agregado

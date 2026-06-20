@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# 04 - Instala .NET Framework 4.8 (el paso más largo, ~20 min).
-# Funciona en prefix win64 con Wine 11+ (WoW64 completo).
+# 04 - ALTERNATIVA OPCIONAL: .NET Framework 4.8 real de Microsoft (~20 min).
+#
+# La base .NET recomendada es Wine Mono (ver 04-wine-mono.sh). Usa ESTE script
+# SOLO si una app concreta falla con Wine Mono. NUNCA ejecutar ambos: la serie
+# 4.x es mutuamente excluyente (hay que retirar Wine Mono antes de dotnet48).
+# En prefix win64 el instalador de dotnet48 es fragil; reservar como ultimo recurso.
 set -euo pipefail
 export WINEPREFIX="${WINEPREFIX:-$HOME/.wine}"
 export WINEDEBUG=-all
