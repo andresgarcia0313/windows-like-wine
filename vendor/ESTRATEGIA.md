@@ -40,9 +40,34 @@ del usuario:
 > suministro completa** (source + historial + checksums) está respaldada tres
 > veces en infraestructura propia.
 
+## Distinción CRÍTICA: clase A (opensource) vs clase B (propietario MS/NVIDIA)
+
+No todo lo que el prefix usa es opensource. Hay que separar dos universos, porque la
+soberanía se logra distinto en cada uno:
+
+| Clase | Componentes | ¿Hay source? | Soberanía |
+|-------|-------------|--------------|-----------|
+| **A. Opensource** | Wine, wine-mono, DXVK, vkd3d/vkd3d-proton, Gecko, winetricks | **Sí** | Vendorizar source + binario, redistribuible públicamente. `sources.lock` cubre estos. |
+| **B. Redistribuible propietario** | corefonts, Tahoma, vcrun2005-2022, msxml, gdiplus, mfc42, quartz, physx, xact, wmp11, dotnetdesktop8 | **No** (binarios cerrados de Microsoft/NVIDIA) | Solo se puede **congelar el binario + su SHA256 en cache PRIVADO** (Canvio/Gitea), NUNCA publicarlo en el GitHub público. |
+
+**Reglas de la clase B:**
+- **NO** publicar binarios de Microsoft/NVIDIA en el repo público ni en release assets públicos
+  (EULA de redistribución restringida). El manifiesto puede guardar su URL+SHA (legal); el blob
+  vive en cache privado verificado por checksum.
+- **PhysX (NVIDIA)** y los `calc.exe`/`mspaint.exe` de archive.org son los de mayor riesgo legal:
+  no congelarlos en público, descargarlos on-demand del origen.
+- **Llave maestra:** `winetricks` (clase A, vendorizado) **ya contiene las URLs+SHA256 de cada
+  verbo MS**. Congelar winetricks por commit congela de facto el manifiesto de toda la clase B;
+  `winetricks --cache=<dir-privado>` puebla el cache local sin reimplementar la descarga.
+
+## Bug detectado en `04-wine-mono.sh` (pendiente)
+
+El script verifica el `.msi` de Wine Mono **por tamaño en bytes**, no por SHA256. Un byte-flip
+del mismo tamaño pasaría inadvertido. Migrar a `sha256sum -c` contra el hash de `sources.lock`.
+
 ## Licencias: ¿podemos redistribuir el source?
 
-Sí, todos son redistribuibles conservando sus avisos de licencia:
+Sí, todos los de **clase A** son redistribuibles conservando sus avisos de licencia:
 
 | Componente | Licencia | ¿Redistribuible? |
 |------------|----------|------------------|

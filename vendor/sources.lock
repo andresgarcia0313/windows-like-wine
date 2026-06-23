@@ -5,6 +5,12 @@
 # El hash se rellena/verifica con: vendor/fetch-sources.sh --record  (primera vez)
 # y se VERIFICA en cada fetch posterior (aborta si el upstream cambio el contenido).
 #
+# SOLO clase A (opensource). Los redistribuibles propietarios de Microsoft/NVIDIA
+# (corefonts, tahoma, vcrun*, msxml, gdiplus, physx, xact, quartz, wmp11...) NO van
+# aqui: son binarios cerrados sin source y su EULA prohibe publicarlos. Su soberania
+# se logra con winetricks (clase A, abajo), que ya congela sus URLs+SHA por verbo, y
+# un cache PRIVADO (Canvio/Gitea). Ver ESTRATEGIA.md, seccion "clase A vs clase B".
+#
 # nombre|tipo|version|url|hash|licencia|redistribuible
 wine|tar|11.0|https://dl.winehq.org/wine/source/11.0/wine-11.0.tar.xz|PENDIENTE|LGPL-2.1-or-later|si
 wine-mono|git|wine-mono-11.2.0|https://github.com/madewokherd/wine-mono|PENDIENTE|MIT+LGPL/GPL|si
