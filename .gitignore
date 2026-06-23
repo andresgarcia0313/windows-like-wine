@@ -1,0 +1,13 @@
+# Indice generado por memsearch al indexar el repo
+.memsearch/
+
+# Respaldos y temporales
+*.bak
+*.bak-*
+*.tmp
+*.log
+*~
+
+# Descargas/cache de instaladores (se obtienen por script)
+*.msi
+*.exe
