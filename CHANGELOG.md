@@ -3,6 +3,24 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [1.8.0] - 2026-06-22
+
+### Agregado
+- **Capa de compilación `bin/wlbuild`**: compila proyectos .NET para el
+  windows-like usando el SDK .NET del HOST como motor (no el compilador de Wine,
+  que esta roto), y deja Wine solo como destino de ejecución. Dos targets:
+  - `net48` (default): framework-dependent, lo ejecuta Wine Mono (validado:
+    CLR 4.0.30319).
+  - `net8`: self-contained win-x64, `.exe` autonomo que corre sin Mono
+    (validado: CLR 8.0.28).
+  Copia el binario a `C:\wlbuild\<proyecto>` y con `--run` lo lanza en Wine.
+
+### Justificación
+- El compilador embebido de Wine Mono falla (`MissingMethodException` en mcs;
+  Roslyn falla por `DiaSymReader.Native` ausente) y el .NET Framework real exige
+  desinstalar Wine Mono (rompiendo la compatibilidad de ejecución). Compilar en
+  el host evita ambos problemas y no toca el prefix.
+
 ## [1.7.0] - 2026-06-20
 
 ### Cambiado

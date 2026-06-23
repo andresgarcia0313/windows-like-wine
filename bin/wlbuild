@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# wlbuild — capa de compilacion del windows-like.
+#
+# Filosofia (decision de diseno): el compilador NO vive dentro de Wine (el csc
+# embebido de Wine Mono esta roto y el .NET real exige quitar Mono, rompiendo la
+# compatibilidad de ejecucion). En su lugar se usa el SDK .NET del HOST como motor
+# y Wine queda solo como destino de ejecucion. Asi no se toca el prefix y se
+# conserva la maxima compatibilidad con cualquier app .NET instalada.
+#
+# Targets:
+#   net48  (default) -> framework-dependent: lo ejecuta Wine Mono. Maxima compat.
+#   net8            -> self-contained win-x64: .exe autonomo, corre sin Mono.
+#
+# Uso: wlbuild <ruta-proyecto|.csproj|.sln> [--target net48|net8] [--run]
+set -euo pipefail
+export WINEPREFIX="${WINEPREFIX:-$HOME/.wine}"
+export WINEDEBUG="${WINEDEBUG:--all}"
+
+die() { echo "ERROR: $*" >&2; exit 1; }
+
+SRC="" ; TARGET="net48" ; RUN=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --target) TARGET="${2:-}"; shift 2 ;;
+    --run)    RUN=1; shift ;;
+    -*)       die "opcion desconocida: $1" ;;
+    *)        SRC="$1"; shift ;;
+  esac
+done
+[ -n "$SRC" ] || die "falta la ruta del proyecto. Uso: wlbuild <proyecto> [--target net48|net8] [--run]"
+[ -e "$SRC" ] || die "no existe: $SRC"
+command -v dotnet >/dev/null || die "no se encontro el SDK .NET en el host (dotnet)"
+
+# Resolver el proyecto/solucion a compilar.
+PROJ="$SRC"
+if [ -d "$SRC" ]; then
+  PROJ="$(find "$SRC" -maxdepth 2 \( -name '*.sln' -o -name '*.csproj' \) | head -1)"
+  [ -n "$PROJ" ] || die "no hay .sln ni .csproj en $SRC"
+fi
+NAME="$(basename "${PROJ%.*}")"
+DEST="$WINEPREFIX/drive_c/wlbuild/$NAME"
+
+echo "==> Compilando '$NAME' con el SDK del host (target=$TARGET)..."
+case "$TARGET" in
+  net4*)
+    dotnet build "$PROJ" -c Release -f "$TARGET" --nologo
+    OUTDIR="$(dirname "$PROJ")/bin/Release/$TARGET" ;;
+  net8*|net9*|net1*)
+    TFM="${TARGET}.0-windows"; [ "$TARGET" = "net8" ] && TFM="net8.0-windows"
+    dotnet publish "$PROJ" -c Release -f "$TFM" -r win-x64 --self-contained true --nologo
+    OUTDIR="$(dirname "$PROJ")/bin/Release/$TFM/win-x64/publish" ;;
+  *) die "target invalido: $TARGET (usa net48 o net8)" ;;
+esac
+
+[ -d "$OUTDIR" ] || die "no se encontro la salida del build en $OUTDIR"
+EXE="$(find "$OUTDIR" -maxdepth 1 -name '*.exe' | head -1)"
+[ -n "$EXE" ] || die "el build no produjo ningun .exe en $OUTDIR"
+
+echo "==> Copiando al windows-like: C:\\wlbuild\\$NAME"
+rm -rf "$DEST"; mkdir -p "$DEST"
+cp -r "$OUTDIR/." "$DEST/"
+WIN_EXE="C:\\wlbuild\\$NAME\\$(basename "$EXE")"
+echo "OK: ejecutable listo en $WIN_EXE"
+
+if [ "$RUN" = "1" ]; then
+  echo "==> Ejecutando en Wine..."
+  cd "$HOME"; wine "$WIN_EXE"
+fi
