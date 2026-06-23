@@ -20,6 +20,15 @@ Versionado: [SemVer](https://semver.org/lang/es/).
   juegos), `xact`/`xact_x64` (audio XACT/XAudio2 32 y 64 bits),
   `dotnetdesktop8` (.NET Desktop Runtime 8 para apps modernas
   framework-dependent) y `vkd3d` (vkd3d-proton, Direct3D 12 → Vulkan al día).
+- **Script `13-integracion-escritorio.sh`**: integra el escritorio con el host.
+  - *Acceso a archivos reales*: re-enlaza las carpetas de shell del usuario
+    Windows (Escritorio, Documentos, Descargas, Música, Imágenes, Vídeos) a sus
+    carpetas XDG reales, con respaldo a nombres localizados cuando XDG no define
+    una carpeta propia. Así los diálogos Abrir/Guardar navegan los archivos del
+    usuario (corrige `Music`, que apuntaba al home pelado).
+  - *Fuentes adicionales*: suma familias libres (Liberation, DejaVu, Noto Sans y
+    Noto Color Emoji) sin forzar sustitución, ampliando la cobertura Unicode y
+    de emoji a color. Idempotente: salta lo ya instalado.
 
 ### Justificación
 - El compilador embebido de Wine Mono falla (`MissingMethodException` en mcs;
