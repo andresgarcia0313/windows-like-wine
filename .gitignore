@@ -11,3 +11,7 @@
 # Descargas/cache de instaladores (se obtienen por script)
 *.msi
 *.exe
+
+# Source congelado (vendoring): pesado, fuera del repo. El manifiesto
+# vendor/sources.lock + fetch-sources.sh SI se versionan (reconstruyen el cache).
+vendor/cache/

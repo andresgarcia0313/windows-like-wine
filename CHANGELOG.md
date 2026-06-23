@@ -29,6 +29,19 @@ Versionado: [SemVer](https://semver.org/lang/es/).
   - *Fuentes adicionales*: suma familias libres (Liberation, DejaVu, Noto Sans y
     Noto Color Emoji) sin forzar sustitución, ampliando la cobertura Unicode y
     de emoji a color. Idempotente: salta lo ya instalado.
+- **Soberanía del código fuente (`vendor/`)**: estrategia y mecanismo para que el
+  repo conserve el source de todos los componentes opensource y se reconstruya
+  sin depender de terceros. `vendor/sources.lock` (lista de materiales con
+  versión, URL, hash, licencia y redistribuibilidad), `vendor/fetch-sources.sh`
+  (descarga y congela el source verificando SHA256/commit, con copia espejo a
+  Canvio) y `vendor/ESTRATEGIA.md` (triple respaldo: tarballs congelados + mirror
+  Gitea propio + release assets, sin inflar el repo git).
+- **Proyecto `proyectos/soporte-uwp/`**: tras confirmar que **nadie** construye
+  soporte UWP/WinUI 3 completo para Wine (jun 2026), se documenta la
+  investigación y se define una **EDT/WBS de 5 niveles** iterativa-incremental y
+  paralelizable apuntando al subconjunto viable (Nivel 0: desempaquetar MSIX +
+  lanzar el `.exe` Win32 del manifiesto). WinUI 3/AppContainer quedan fuera de
+  alcance con justificación.
 
 ### Justificación
 - El compilador embebido de Wine Mono falla (`MissingMethodException` en mcs;

@@ -1,0 +1,13 @@
+# Lista de materiales (BOM) del windows-like — fuentes opensource a congelar.
+# Formato:  nombre|tipo|version|url|hash|licencia|redistribuible
+#   tipo = tar  -> tarball verificado por SHA256 (hash = sha256 del archivo)
+#   tipo = git  -> repo clonado a tag/rama; reproducible por commit (hash = commit)
+# El hash se rellena/verifica con: vendor/fetch-sources.sh --record  (primera vez)
+# y se VERIFICA en cada fetch posterior (aborta si el upstream cambio el contenido).
+#
+# nombre|tipo|version|url|hash|licencia|redistribuible
+wine|tar|11.0|https://dl.winehq.org/wine/source/11.0/wine-11.0.tar.xz|PENDIENTE|LGPL-2.1-or-later|si
+wine-mono|git|wine-mono-11.2.0|https://github.com/madewokherd/wine-mono|PENDIENTE|MIT+LGPL/GPL|si
+dxvk|git|HEAD|https://github.com/doitsujin/dxvk|PENDIENTE|zlib|si
+vkd3d-proton|git|HEAD|https://github.com/HansKristian-Work/vkd3d-proton|PENDIENTE|LGPL-2.1/Apache-2.0|si
+winetricks|git|HEAD|https://github.com/Winetricks/winetricks|PENDIENTE|LGPL-3.0|si
