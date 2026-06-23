@@ -14,6 +14,12 @@ Versionado: [SemVer](https://semver.org/lang/es/).
   - `net8`: self-contained win-x64, `.exe` autonomo que corre sin Mono
     (validado: CLR 8.0.28).
   Copia el binario a `C:\wlbuild\<proyecto>` y con `--run` lo lanza en Wine.
+- **Script `12-runtimes-extra.sh`**: runtimes por demanda que amplían la
+  compatibilidad del prefix, idempotentes y no fatales (cada verbo continúa si
+  no aplica en win64): `quartz` (DirectShow multimedia), `physx` (física de
+  juegos), `xact`/`xact_x64` (audio XACT/XAudio2 32 y 64 bits),
+  `dotnetdesktop8` (.NET Desktop Runtime 8 para apps modernas
+  framework-dependent) y `vkd3d` (vkd3d-proton, Direct3D 12 → Vulkan al día).
 
 ### Justificación
 - El compilador embebido de Wine Mono falla (`MissingMethodException` en mcs;
