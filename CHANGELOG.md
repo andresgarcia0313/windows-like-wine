@@ -3,6 +3,32 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versionado: [SemVer](https://semver.org/lang/es/).
 
+## [1.9.0] - 2026-06-24
+
+### Agregado
+- **Soporte Nivel 0 de apps MSIX/AppX (`bin/wl-msix` + `scripts/14-msix.sh`)**:
+  primer incremento funcional del proyecto `soporte-uwp`. Instala y lanza apps
+  MSIX cuyo entrypoint es un `.exe` Win32, sin tocar el prefix ni Wine (el MSIX
+  es un contenedor ZIP/OPC: se extrae, se lee el `AppxManifest.xml` y se ejecuta
+  el binario del paquete). Subcomandos: `info` (clasifica win32/winui3/unknown
+  sin instalar), `install` (extrae -> valida -> `mv` atomico -> registra ->
+  acceso en el menu Inicio), `launch` (con `WINEDEBUG=-all`, cache de shaders
+  DXVK/vkd3d y `--turbo` para esync/fsync), `list` y `remove` (sin residuos).
+  Datos en `C:\msix\` (`_index.json`, `_frameworks` compartido, `_cache`).
+- **Herramientas de soporte (`tools/msix_*.py`)**, una por responsabilidad:
+  `msix_extract.py` (extracción en streaming con protección anti Zip-Slip),
+  `msix_manifest.py` (parser del manifiesto a JSON + clasificación de la app) y
+  `msix_index.py` (registro idempotente de instalaciones).
+- **Tests reproducibles (`proyectos/soporte-uwp/tests/`)**: `make-sample-msix.sh`
+  genera un MSIX de muestra (app net48 minima) on-demand sin versionar binarios, y
+  `test-nivel0.sh` valida el ciclo completo info/install/list/launch/remove
+  (criterio `[V]`: el `.exe` Win32 del paquete corre en el windows-like e imprime
+  su marcador). Validado: 7/7 OK.
+
+### Validación
+- Ciclo end-to-end verde: una app MSIX Win32-pura se desempaqueta, se instala, se
+  lanza (ejecuta en Wine Mono) y se desinstala sin dejar residuos.
+
 ## [1.8.0] - 2026-06-22
 
 ### Agregado

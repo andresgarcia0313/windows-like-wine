@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+# wl-msix - instalar y lanzar apps MSIX/AppX Win32 en el windows-like (Nivel 0).
+#
+# No toca el prefix ni Wine: el MSIX es un ZIP/OPC, se extrae, se lee su
+# AppxManifest y se lanza el .exe Win32 del paquete. Las apps que dependen de
+# WinUI3/AppContainer quedan fuera de alcance (se diagnostican, no se fuerzan).
+# Datos: C:\msix\ -> _index.json (registro), _frameworks (compartido), _cache.
+# Uso:
+#   wl-msix info    <pkg.msix>          inspecciona sin instalar (clasifica)
+#   wl-msix install <pkg.msix>          extrae + registra + acceso menu Inicio
+#   wl-msix launch  <AppId> [--turbo]   ejecuta (turbo = esync/fsync)
+#   wl-msix list                        apps instaladas
+#   wl-msix remove  <AppId>             desinstala sin residuos
+set -euo pipefail
+export WINEPREFIX="${WINEPREFIX:-$HOME/.wine}" WINEDEBUG="${WINEDEBUG:--all}"
+SELF="$(readlink -f "$0")"; TOOLS="$(cd "$(dirname "$SELF")/../tools" && pwd)"
+PY="${PYTHON:-python3}"
+MSIX_C="$WINEPREFIX/drive_c/msix"
+INDEX="$MSIX_C/_index.json"
+LOG="/tmp/wl-msix.log"
+
+log() { echo "[$(date +%H:%M:%S)] $*" | tee -a "$LOG"; }
+die() { echo "ERROR: $*" >&2; exit 1; }
+jget() { "$PY" -c "import sys,json;v=json.load(sys.stdin).get('$1');print(','.join(v) if isinstance(v,list) else (v or ''))"; }
+
+cmd_info() {
+  local pkg="${1:-}"; [ -f "$pkg" ] || die "no existe el paquete: $pkg"
+  local tmp; tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' RETURN
+  "$PY" "$TOOLS/msix_extract.py" "$pkg" "$tmp" >/dev/null || die "extraccion fallida"
+  "$PY" "$TOOLS/msix_manifest.py" "$tmp"
+}
+
+mk_shortcut() {
+  local name="$1" target="$2"
+  local winbase="C:\\users\\$USER\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\MSIX"
+  mkdir -p "$WINEPREFIX/drive_c/users/$USER/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/MSIX"
+  if [ -f "$WINEPREFIX/drive_c/users/Public/CreateLnk.exe" ]; then
+    wine 'C:\users\Public\CreateLnk.exe' "$winbase\\$name.lnk" "$target" >/dev/null 2>&1 || true
+  fi
+  echo "$winbase\\$name.lnk"
+}
+
+cmd_install() {
+  local pkg="${1:-}"; [ -f "$pkg" ] || die "no existe el paquete: $pkg"
+  mkdir -p "$MSIX_C/_frameworks" "$MSIX_C/_cache"
+  local tmp; tmp="$(mktemp -d)"
+  log "extrayendo $pkg"
+  local n; n="$("$PY" "$TOOLS/msix_extract.py" "$pkg" "$tmp")" || { rm -rf "$tmp"; die "extraccion fallida"; }
+  log "extraidas $n entradas"
+  local mj; mj="$("$PY" "$TOOLS/msix_manifest.py" "$tmp")" || { rm -rf "$tmp"; die "manifiesto invalido"; }
+  local id exe disp cls deps
+  id="$(printf '%s' "$mj" | jget id)"
+  exe="$(printf '%s' "$mj" | jget executable)"
+  disp="$(printf '%s' "$mj" | jget display)"
+  cls="$(printf '%s' "$mj" | jget class)"
+  deps="$(printf '%s' "$mj" | jget dependencies)"
+  [ "$cls" = "win32" ] || log "AVISO: clase '$cls' (no Win32-pura); puede no abrir."
+  [ -n "$exe" ] || { rm -rf "$tmp"; die "el manifiesto no declara Executable (sin entrypoint Win32)"; }
+  local dest="$MSIX_C/$id"
+  rm -rf "$dest"; mv "$tmp" "$dest"   # movimiento atomico: nunca instalacion a medias
+  local win_exe="C:\\msix\\$id\\${exe//\//\\}"
+  local lnk; lnk="$(mk_shortcut "$disp" "$win_exe")"
+  "$PY" "$TOOLS/msix_index.py" "$INDEX" add "$id" "$disp" "$win_exe" "$lnk" "$deps"
+  log "OK: '$disp' instalada. Lanza con: wl-msix launch $id"
+}
+
+cmd_launch() {
+  local id="${1:-}"; [ -n "$id" ] || die "uso: wl-msix launch <AppId> [--turbo]"
+  local rec; rec="$("$PY" "$TOOLS/msix_index.py" "$INDEX" get "$id")" || die "no instalada: $id"
+  local exe; exe="$(printf '%s' "$rec" | jget exe)"
+  export DXVK_STATE_CACHE_PATH="$MSIX_C/_cache" VKD3D_SHADER_CACHE_PATH="$MSIX_C/_cache"
+  [ "${2:-}" = "--turbo" ] && export WINEESYNC=1 WINEFSYNC=1
+  log "lanzando $id ($exe) turbo=${2:-no}"
+  cd "$HOME"; exec wine "$exe"
+}
+
+cmd_list() {
+  [ -f "$INDEX" ] && "$PY" "$TOOLS/msix_index.py" "$INDEX" list || echo "(sin apps MSIX instaladas)"
+}
+
+cmd_remove() {
+  local id="${1:-}"; [ -n "$id" ] || die "uso: wl-msix remove <AppId>"
+  local rec; rec="$("$PY" "$TOOLS/msix_index.py" "$INDEX" get "$id")" || die "no instalada: $id"
+  local lnk; lnk="$(printf '%s' "$rec" | jget lnk)"
+  rm -rf "$MSIX_C/$id"
+  local lnk_host="${lnk//\\//}"; rm -f "$WINEPREFIX/drive_c/${lnk_host#C:/}" 2>/dev/null || true
+  "$PY" "$TOOLS/msix_index.py" "$INDEX" remove "$id"
+  log "OK: '$id' desinstalada."
+}
+
+[ $# -ge 1 ] || die "uso: wl-msix <info|install|launch|list|remove> ..."
+sub="$1"; shift || true
+case "$sub" in
+  info)    cmd_info    "$@" ;;
+  install) cmd_install "$@" ;;
+  launch)  cmd_launch  "$@" ;;
+  list)    cmd_list    "$@" ;;
+  remove)  cmd_remove  "$@" ;;
+  *)       die "subcomando desconocido: $sub" ;;
+esac

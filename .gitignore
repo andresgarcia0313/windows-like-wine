@@ -1,6 +1,10 @@
 # Indice generado por memsearch al indexar el repo
 .memsearch/
 
+# Cache de bytecode Python
+__pycache__/
+*.pyc
+
 # Respaldos y temporales
 *.bak
 *.bak-*

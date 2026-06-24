@@ -48,8 +48,10 @@ Fuentes completas en [`investigacion.md`](investigacion.md).
 
 ## Iteraciones (roadmap de alto nivel)
 
-1. **It-1 (Nivel 0 mínimo)**: desempaquetar un `.msix` y lanzar su `.exe` Win32.
-   *Validación*: una app MSIX Win32-pura abre en el windows-like.
+1. **It-1 (Nivel 0 mínimo) [COMPLETADA]**: desempaquetar un `.msix` y lanzar su
+   `.exe` Win32. Entregable: `wl-msix` (`bin/wl-msix` + `tools/msix_*.py`),
+   instalable con `scripts/14-msix.sh`. *Validación*: ciclo end-to-end
+   info/install/list/launch/remove verde (`tests/test-nivel0.sh`, 7/7 OK).
 2. **It-2 (Nivel 0 robusto)**: parsear `AppxManifest.xml`, resolver dependencias
    de `Framework` packages, registrar accesos en el menú Inicio.
    *Validación*: 3 apps MSIX distintas instalan y aparecen en el menú.
