@@ -42,6 +42,20 @@ Versionado: [SemVer](https://semver.org/lang/es/).
   paralelizable apuntando al subconjunto viable (Nivel 0: desempaquetar MSIX +
   lanzar el `.exe` Win32 del manifiesto). WinUI 3/AppContainer quedan fuera de
   alcance con justificación.
+- **`proyectos/soporte-uwp/actividades-detalle.md`**: detalle de ejecución de cada
+  actividad atómica del WBS (técnica, herramienta, entregable y criterio `[V]`) más
+  los Requisitos No Funcionales transversales (compatibilidad, estabilidad,
+  rendimiento, bajo consumo, ultrarendimiento) con tácticas concretas de Wine
+  (esync/fsync, `WINEDEBUG=-all`, caché de shaders DXVK/vkd3d, dedup de framework
+  packages, extracción en streaming, wineserver persistente), un plan de rendimiento
+  con presupuestos medibles y una matriz de fallos/mitigación de estabilidad.
+- **Distinción legal de vendoring (clase A vs clase B)**: `vendor/ESTRATEGIA.md` y
+  `vendor/sources.lock` aclaran que solo los componentes opensource (clase A) son
+  vendorizables públicamente; los redistribuibles propietarios de Microsoft/NVIDIA
+  (clase B: corefonts, vcrun, physx, etc.) carecen de source y su EULA prohíbe
+  publicarlos, así que su soberanía se logra vía winetricks (congela sus URLs+SHA) y
+  un cache privado. Se documenta también el pendiente de verificar `04-wine-mono.sh`
+  por SHA256 en lugar de por tamaño en bytes.
 
 ### Justificación
 - El compilador embebido de Wine Mono falla (`MissingMethodException` en mcs;

@@ -42,6 +42,9 @@ Fuentes completas en [`investigacion.md`](investigacion.md).
   pueden ejecutarse a la vez (sin dependencias cruzadas). Los marcados `→` son
   secuenciales (dependen del anterior).
 - Ver la **EDT/WBS de 5 niveles** en [`WBS.md`](WBS.md).
+- Ver el **detalle de ejecución por actividad** (cómo, herramientas, criterios `[V]`)
+  y los **Requisitos No Funcionales** (compatibilidad, estabilidad, rendimiento, bajo
+  consumo, ultrarendimiento) en [`actividades-detalle.md`](actividades-detalle.md).
 
 ## Iteraciones (roadmap de alto nivel)
 
